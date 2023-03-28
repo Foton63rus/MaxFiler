@@ -8,6 +8,14 @@
         }
         public FileInfo Parse(string file)
         {
+            string preExtract = PreExtract(file);
+            FileInfo info = ExtractInfo(preExtract);
+            Console.WriteLine("\n" + info + "\n");
+            return info;
+        }
+
+        public string PreExtract(string file)
+        {
             try
             {
                 using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read))
@@ -21,15 +29,11 @@
 
                         string content = contents.Substring(first, last - first);
 
-                        //Console.WriteLine($"file {file}");
-                        //Console.WriteLine($"content: {content}");
-                        FileInfo info = ExtractInfo(content);
-                        Console.WriteLine(info);
-                        return info;
+                        return content;
                     }
                 }
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 return null;
             }
@@ -37,27 +41,16 @@
 
         public static FileInfo ExtractInfo(string content)
         {
-            string Version = "";
-            string Vertices = "";
-            string Faces = "";
-            string Shapes = "";
-            string Lights = "";
-            string Cameras = "";
-            string Helpers = "";
-            string Renderer = "";
-            string RenderWidth = "";
-            string RenderHeight = "";
-
             List<string> Pictures = new List<string>();
 
-            Version = getByPatternToDigit(content, "Version");
-            Vertices = getByPatternToDigit(content, "Vertices");
-            Faces = getByPatternToDigit(content, "Faces");
-            Shapes = getByPatternToDigit(content, "Shapes");
-            Lights = getByPatternToDigit(content, "Lights");
-            Cameras = getByPatternToDigit(content, "Cameras");
-            Helpers = getByPatternToDigit(content, "Helpers");
-            Renderer = getRenderer(content);
+            string Version = getByPatternToDigit(content, "Version");
+            string Vertices = getByPatternToDigit(content, "Vertices");
+            string Faces = getByPatternToDigit(content, "Faces");
+            string Shapes = getByPatternToDigit(content, "Shapes");
+            string Lights = getByPatternToDigit(content, "Lights");
+            string Cameras = getByPatternToDigit(content, "Cameras");
+            string Helpers = getByPatternToDigit(content, "Helpers");
+            string Renderer = getRenderer(content);
             Pictures = getPictures(content);
 
             return new FileInfo(Version, Vertices, Faces, Shapes, Lights, Cameras, Helpers, Renderer);
@@ -90,19 +83,3 @@
         }
     }
 }
-
-
-//public static void ReadFileBackwards(string filePath)
-//{
-//    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-//    using (var reader = new StreamReader(stream))
-//    {
-//        reader.BaseStream.Seek(-2, SeekOrigin.End);
-//        string line;
-//        while ((line = reader.ReadLine()) != null)
-//        {
-//            Console.WriteLine(line);
-//            reader.BaseStream.Seek(-2, SeekOrigin.Current);
-//        }
-//    }
-//}
