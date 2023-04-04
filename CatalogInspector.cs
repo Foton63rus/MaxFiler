@@ -4,14 +4,16 @@ namespace MaxFiler
 {
     internal class CatalogInspector
     {
-        private List<string> _directories = new List<string>();
         private Dictionary<string, IFileInfoParser> _fileFormatToParserDictionary = new Dictionary<string, IFileInfoParser>();
-
         private List<IFileInfoParser> _fileInfoParsers = new List<IFileInfoParser>();
+
+        private FileInfoWriter _fileInfoWriter;
 
         public CatalogInspector(IFileInfoParser[] fileInfoParsers = null)
         {
-            AppEvents.fileFormatToParserRegistryAction += AddFileFormatToParser;
+            _fileInfoWriter = new FileInfoWriter();
+
+            AppEvents.FileFormatToParserRegistryAction += AddFileFormatToParser;
 
             if (fileInfoParsers != null)
             {
@@ -35,19 +37,12 @@ namespace MaxFiler
                 return;
             }
 
-            Reset();
-
             bool filesInCurrentDirectoryCanParse = FilesParse(directory);
 
             if (!filesInCurrentDirectoryCanParse)
             {
                 RecursiveSearchInNestedFolders( getNestedFolders(directory) );
             }
-        }
-
-        private void Reset()
-        {
-            _directories.Clear();
         }
 
         public void AddParser(IFileInfoParser fileInfoParser)

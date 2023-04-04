@@ -4,13 +4,16 @@
     {
         void IFileInfoParser.Init()
         {
-            AppEvents.fileFormatToParserRegistryActionInvoker(".max", this);
+            AppEvents.FileFormatToParserRegistryActionInvoke(".max", this);
         }
         public FileInfo Parse(string file)
         {
             string preExtract = PreExtract(file);
             FileInfo info = ExtractInfo(preExtract);
             Console.WriteLine("\n" + info + "\n");
+
+            AppEvents.FileInfoReturnActionInvoke(file, JsonConvert.SerializeObject(info));
+
             return info;
         }
 
@@ -41,7 +44,7 @@
 
         public static FileInfo ExtractInfo(string content)
         {
-            List<string> Pictures = new List<string>();
+            List<string> Textures = new List<string>();
 
             string Version = getByPatternToDigit(content, "Version");
             string Vertices = getByPatternToDigit(content, "Vertices");
@@ -51,7 +54,7 @@
             string Cameras = getByPatternToDigit(content, "Cameras");
             string Helpers = getByPatternToDigit(content, "Helpers");
             string Renderer = getRenderer(content);
-            Pictures = getPictures(content);
+            Textures = getTextures(content);
 
             return new FileInfo(Version, Vertices, Faces, Shapes, Lights, Cameras, Helpers, Renderer);
         }
@@ -67,17 +70,24 @@
         {
             string regexPattern = string.Format(@"(?<=Renderer\sName=).*?(?=\x14)");
             Match match = Regex.Match(text, regexPattern);
-            return match.Success ? match.Groups[0].Value.Trim() : "";
+
+            if (match.Success)
+            {
+                return match.Groups[0].Value.Trim().Replace($"\u0000", "");
+            }
+            else
+            {
+                return "";
+            }
         }
 
-        static List<string> getPictures(string text)
+        static List<string> getTextures(string text)
         {
             string regexPattern = string.Format(@"\w+.png|\w+.jpg|\w+.tif");
             List<string> matchList = new List<string>();
             foreach (Match match in Regex.Matches(text, regexPattern))
             {
                 matchList.Add(match.Value.Trim());
-                Console.WriteLine(match.Value.Trim());
             }
             return matchList;
         }

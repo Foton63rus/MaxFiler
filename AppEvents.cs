@@ -2,11 +2,19 @@
 {
     internal static class AppEvents
     {
-        internal static event Action<string, IFileInfoParser> fileFormatToParserRegistryAction;
+        internal static event Action<string, IFileInfoParser> FileFormatToParserRegistryAction; // Уведомление парсера, что надо произвести чтение инфы
 
-        public static void fileFormatToParserRegistryActionInvoker(string key, IFileInfoParser parser)
+        internal static event Action<string, string> FileInfoReturnAction; // Action< filepath, json(fileinfo) > Уведомление о готовой инфе по файлу
+
+        public static void FileFormatToParserRegistryActionInvoke(string key, IFileInfoParser parser)
         {
-            fileFormatToParserRegistryAction.Invoke(key, parser);
+            FileFormatToParserRegistryAction?.Invoke(key, parser);
         }
+
+        public static void FileInfoReturnActionInvoke(string filepath, string jsonFileInfo)
+        {
+            FileInfoReturnAction?.Invoke(filepath, jsonFileInfo);
+        }
+
     }
 }
