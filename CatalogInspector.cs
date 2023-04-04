@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 
 namespace MaxFiler
 {
@@ -10,7 +11,7 @@ namespace MaxFiler
         private FileInfoWriter _fileInfoWriter;
 
         public CatalogInspector(IFileInfoParser[] fileInfoParsers = null)
-        {
+        {   
             _fileInfoWriter = new FileInfoWriter();
 
             AppEvents.FileFormatToParserRegistryAction += AddFileFormatToParser;
@@ -37,11 +38,15 @@ namespace MaxFiler
                 return;
             }
 
-            bool filesInCurrentDirectoryCanParse = FilesParse(directory);
+            FileInfo filesInCurrentDirectoryCanParse = FilesParse(directory);
 
-            if (!filesInCurrentDirectoryCanParse)
+            if (filesInCurrentDirectoryCanParse != null)
             {
-                RecursiveSearchInNestedFolders( getNestedFolders(directory) );
+                _fileInfoWriter.writeByFileName(filesInCurrentDirectoryCanParse.FileName, JsonConvert.SerializeObject(filesInCurrentDirectoryCanParse) );
+            }
+            else
+            {
+                RecursiveSearchInNestedFolders(getNestedFolders(directory));
             }
         }
 
@@ -62,31 +67,23 @@ namespace MaxFiler
 
         private bool HasSubFolders(string directory) => Directory.GetDirectories(directory).Length > 0;
 
-        private void addFileInfo(FileInfo fileInfo)
-        {
-            if (fileInfo != null)
-            {
-
-            }
-        }
-
         private List<string> getFiles(string directory) => Directory.GetFiles(directory).ToList();
 
         private List<string> getNestedFolders(string directory) => Directory.GetDirectories(directory).ToList();
 
-        private bool FilesParse(string directory)
+        private FileInfo FilesParse(string directory)
         {
-            bool extensionSupported = false;
+            FileInfo fileInfo = null;
             foreach (string file in getFiles(directory)) 
             {   
                 if (_fileFormatToParserDictionary.ContainsKey(Path.GetExtension(file)))
                 {
                     Console.WriteLine(file);
-                    _fileFormatToParserDictionary[Path.GetExtension(file)].Parse(file);
-                    extensionSupported = true;
+                    fileInfo = _fileFormatToParserDictionary[Path.GetExtension(file)].Parse(file);
+                    Console.WriteLine(fileInfo.ToString());
                 }
             }
-            return extensionSupported;
+            return fileInfo;
         }
 
         private void RecursiveSearchInNestedFolders(List<string> directories) 

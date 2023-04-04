@@ -3,6 +3,7 @@
     [Serializable]
     public class FileInfo
     {
+        public string       FileName;
         public string       FileType;
         public string       Version;
         public string       Vertices;
@@ -12,9 +13,10 @@
         public string       Cameras;
         public string       Helpers;
         public string       Renderer;
-        public List<string> Textures = new List<string>();
+        public List<string> Textures;
 
-        public FileInfo(string Version = "",
+        public FileInfo( 
+                        string Version = "",
                         string Vertices = "",
                         string Faces = "",
                         string Shapes = "",
@@ -22,9 +24,11 @@
                         string Cameras = "",
                         string Helpers = "",
                         string Renderer = "",
-                        List<string> Textures = null
+                        List<string> Textures = null,
+                        string FileName = ""
                         )
         {
+            this.FileName   = FileName;
             this.FileType   = "Max";
             this.Version    = Version;
             this.Vertices   = Vertices;
@@ -35,7 +39,10 @@
             this.Helpers    = Helpers;
             this.Renderer   = Renderer;
 
-            if (Textures != null) this.Textures = Textures;
+            if (Textures != null)
+            {
+                this.Textures = Textures;
+            }
             
         }
 
@@ -44,9 +51,17 @@
             string strTextures = $"None";
             if (this.Textures.Count > 0)
             {
+                string separator = $"; ";
+                StringBuilder sb = new StringBuilder();
                 strTextures = $"{Textures.Append("; ")}";
+                foreach (string item in Textures)
+                {
+                    sb.Append($"{separator}{item}");
+                }
+                strTextures = sb.ToString().Substring(separator.Length-1);
             }
             return
+                //$"Type: {FileName}\n" +
                 $"Type: {FileType}\n" +
                 $"Version: {Version}\n" +
                 $"Vertices: {Vertices}\n" +

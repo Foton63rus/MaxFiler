@@ -10,11 +10,13 @@ class Program
 {
     internal static void Main(string[] args)
     {
-        string q = @"C:\Users\4ton1\OneDrive\Рабочий стол\testMax\3124e123-2565247673.jpg";
-        List<MagickColor> colors = PaletteHistogram.getTopColorPalette();
-        PaletteHistogram palette = new PaletteHistogram(colors);
-        palette.ImageRate(q);
-        //ColorHistogram.getTopColors(q);
+        // Тут блок кода с распознаванием топа цветов из палитры
+        //string picturePath = @"...";
+        //List<MagickColor> colors = PaletteHistogram.getTopColorPalette();
+        //PaletteHistogram palette = new PaletteHistogram(colors);
+        //palette.ImageRate(picturePath);
+
+        //ColorHistogram.getTopColors(picturePath);
 
         CatalogInspector inspector = new CatalogInspector();
         inspector.AddParser( new MaxInfoParser2() );
