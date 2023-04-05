@@ -55,7 +55,6 @@
             {
                 string separator = $"; ";
                 StringBuilder sb = new StringBuilder();
-                strTextures = $"{Textures.Append("; ")}";
                 foreach (string item in Textures)
                 {
                     sb.Append($"{separator}{item}");

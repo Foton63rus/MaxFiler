@@ -1,5 +1,19 @@
 ﻿namespace MaxFiler.ColorManager
 {
+    /// <summary>
+    ///  Класс, который находит совпадения с палитрой цветов, 
+    ///  а точнее сортирует все цвета на самые ближайшие к тем, 
+    ///  которые сосавляют палитру,заданную в конструкторе
+    ///  
+    //  Пример использования
+    /// 
+    /// Выьираем цвета для палитры или берем имеющиеся
+    /// List<MagickColor> colors = PaletteHistogram.getTopColorPalette();
+    /// Создаем экземпляр палитры и передаем собранные цвета
+    /// PaletteHistogram palette = new PaletteHistogram(colors);
+    /// Вызываем метод распределения цветов к ближайшим
+    /// palette.ImageRate( "..." );
+    /// </summary>
     public class PaletteHistogram
     {
         public Dictionary<MagickColor, int> Rate = new Dictionary<MagickColor, int>();
@@ -19,7 +33,7 @@
             {
                 Console.WriteLine($"pix count real: {image.GetPixels().Count()}");
                 int wSize = 64; int hSize = 64;
-                image.Resize(wSize, hSize);
+                image.Resize(wSize, hSize); //уменьшаем размер картинки для увеличения скорости просчета
                 var pixColors = image.Histogram();
                 Console.WriteLine($"pix count: {pixColors.Count}/{wSize*hSize}");
                 MagickColor currentColor;

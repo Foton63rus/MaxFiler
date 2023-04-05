@@ -4,7 +4,7 @@
     /// 
     /// Класс-менеджер парсеров.
     /// 
-    /// Порядок его использования:
+    //  Порядок его использования:
     /// создаем экземпляр
     /// CatalogInspector inspector = new CatalogInspector();
     /// добавляем-с парсеры разных форматов
@@ -13,6 +13,9 @@
     /// inspector.InitParsers();
     /// инспектируем каталог
     /// inspector.InspectDirectory( "путь_к_каталогу" );
+    /// 
+    /// Метод, который из картинок пытается выделить рендеры
+    //  GetRenderList(string directory, FileInfo fileInfo)
     /// </summary>
     internal class CatalogInspector
     {
@@ -41,12 +44,12 @@
             }
         }
 
-        public void InspectDirectory(string directory)
+        public FileInfo InspectDirectory(string directory)
         {
             if (!Directory.Exists(directory))
             {
                 Console.WriteLine("Directory not exist");
-                return;
+                return null;
             }
 
             FileInfo filesInCurrentDirectoryCanParse = FilesParse(directory);
@@ -54,10 +57,12 @@
             if (filesInCurrentDirectoryCanParse != null)
             {
                 _fileInfoWriter.writeByFileName(filesInCurrentDirectoryCanParse.FileName, JsonConvert.SerializeObject(filesInCurrentDirectoryCanParse) );
+                return filesInCurrentDirectoryCanParse;
             }
             else
             {
                 RecursiveSearchInNestedFolders(getNestedFolders(directory));
+                return null;
             }
         }
 
@@ -100,6 +105,14 @@
             {
                 InspectDirectory(directory);
             }
+        }
+
+        public List<string> GetRenderList(string directory, FileInfo fileInfo)
+        {   //находим все картинки в каталоге и все те, которые не содержаться в списке макс файла
+            return Directory.GetFiles(directory).   //берем файлы из каталога
+                Where(x => x.EndsWith(".png") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".tif") || x.EndsWith(".tga")).    //отсеиваем картинки
+                Select(x => x.Substring(x.LastIndexOf('\\')+1).ToLower()).  //отсекаем пути до каталога и переводим в нижний регистр
+                Where(x => !fileInfo.Textures.Contains(x)).ToList();    //фильтруем файлы, находящиейся в списке текстур
         }
     }
 }

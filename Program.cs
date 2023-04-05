@@ -22,7 +22,15 @@ class Program
         inspector.AddParser( new MaxInfoParser() );
         inspector.InitParsers();
         Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
-        inspector.InspectDirectory( Console.ReadLine() );
+        string directory = Console.ReadLine();
+        MaxFiler.FileInfo fileInfo = inspector.InspectDirectory(directory);
+        if (fileInfo != null )
+        {
+            foreach (var item in inspector.GetRenderList( directory , fileInfo))
+            {
+                Console.WriteLine(item);
+            }
+        }
         Console.ReadLine();
     }
 }
