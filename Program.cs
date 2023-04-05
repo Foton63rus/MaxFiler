@@ -19,7 +19,7 @@ class Program
         //ColorHistogram.getTopColors(picturePath);
 
         CatalogInspector inspector = new CatalogInspector();
-        inspector.AddParser( new MaxInfoParser2() );
+        inspector.AddParser( new MaxInfoParser() );
         inspector.InitParsers();
         Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
         inspector.InspectDirectory( Console.ReadLine() );

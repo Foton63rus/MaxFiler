@@ -3,10 +3,6 @@
     internal class FileInfoWriter
     {
         private string _fileInfoName = $"_info.txt";
-        public FileInfoWriter()
-        {
-            AppEvents.FileInfoReturnAction += writeByFileName;
-        }
 
         internal void writeByFileName(string filepath, string jsonFileInfo)
         {

@@ -1,8 +1,19 @@
-﻿using System.IO;
-using System.Reflection;
-
-namespace MaxFiler
+﻿namespace MaxFiler
 {
+    /// <summary>
+    /// 
+    /// Класс-менеджер парсеров.
+    /// 
+    /// Порядок его использования:
+    /// создаем экземпляр
+    /// CatalogInspector inspector = new CatalogInspector();
+    /// добавляем-с парсеры разных форматов
+    /// inspector.AddParser( new ___Parser() );
+    /// инициализируем парсеры
+    /// inspector.InitParsers();
+    /// инспектируем каталог
+    /// inspector.InspectDirectory( "путь_к_каталогу" );
+    /// </summary>
     internal class CatalogInspector
     {
         private Dictionary<string, IFileInfoParser> _fileFormatToParserDictionary = new Dictionary<string, IFileInfoParser>();
@@ -64,9 +75,6 @@ namespace MaxFiler
 
             _fileFormatToParserDictionary.Add(key, parser);
         }
-
-        private bool HasSubFolders(string directory) => Directory.GetDirectories(directory).Length > 0;
-
         private List<string> getFiles(string directory) => Directory.GetFiles(directory).ToList();
 
         private List<string> getNestedFolders(string directory) => Directory.GetDirectories(directory).ToList();

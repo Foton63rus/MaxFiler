@@ -13,6 +13,8 @@
         public string       Cameras;
         public string       Helpers;
         public string       Renderer;
+
+        [NonSerialized]
         public List<string> Textures;
 
         public FileInfo( 

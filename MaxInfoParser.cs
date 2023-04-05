@@ -8,20 +8,57 @@
         }
         public FileInfo Parse(string file)
         {
-            string preExtract = PreExtract(file);
-            FileInfo info = ExtractInfo(preExtract);
-            Console.WriteLine("\n" + info + "\n");
-
-            AppEvents.FileInfoReturnActionInvoke(file, JsonConvert.SerializeObject(info));
-
+            string context = GetContextFromFileFile(file);
+            List<string> contextSubstrings = new List<string>();
+            foreach (string item in ContextSplitter(context))
+            {
+                if (item != "")
+                {
+                    contextSubstrings.Add(item.Trim());
+                }
+            }
+            FileInfo info = ExtractInfo(contextSubstrings);
+            info.FileName = file;
             return info;
         }
 
-        public string PreExtract(string file)
+        static string getParametrFromContextSubstrings(List<string> contextSubstrings, string paramName)
+        {
+            foreach (string item in contextSubstrings)
+            {
+                if (item.StartsWith(paramName))
+                {
+                    return item.Split(" ")[1];
+                }
+            }
+            return null;
+        }
+
+        static string getRenderer(List<string> contextSubstrings) => contextSubstrings.Find(x => x.StartsWith("Renderer Name")).Split("=")[1];
+
+        public static FileInfo ExtractInfo(List<string> contextSubstrings)
+        {
+            List<string> Textures = new List<string>();
+
+            string Version = getParametrFromContextSubstrings(contextSubstrings, "Version");
+            string Vertices = getParametrFromContextSubstrings(contextSubstrings, "Vertices");
+            string Faces = getParametrFromContextSubstrings(contextSubstrings, "Faces");
+            string Shapes = getParametrFromContextSubstrings(contextSubstrings, "Shapes");
+            string Lights = getParametrFromContextSubstrings(contextSubstrings, "Lights");
+            string Cameras = getParametrFromContextSubstrings(contextSubstrings, "Cameras");
+            string Helpers = getParametrFromContextSubstrings(contextSubstrings, "Helpers");
+            string Renderer = getRenderer(contextSubstrings);
+            Textures = getTextures(contextSubstrings);
+            return new FileInfo(Version, Vertices, Faces, Shapes, Lights, Cameras, Helpers, Renderer, Textures);
+        }
+        static List<string> getTextures(List<string> contextSubstrings) => 
+            contextSubstrings.Where(x => x.EndsWith(".png") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".tif") || x.EndsWith(".tga")).ToList();
+
+        public static string GetContextFromFileFile(string filePath)
         {
             try
             {
-                using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 1024))
                     {
@@ -38,58 +75,15 @@
             }
             catch (Exception e)
             {
-                return null;
-            }
-        }
-
-        public static FileInfo ExtractInfo(string content)
-        {
-            List<string> Textures = new List<string>();
-
-            string Version = getByPatternToDigit(content, "Version");
-            string Vertices = getByPatternToDigit(content, "Vertices");
-            string Faces = getByPatternToDigit(content, "Faces");
-            string Shapes = getByPatternToDigit(content, "Shapes");
-            string Lights = getByPatternToDigit(content, "Lights");
-            string Cameras = getByPatternToDigit(content, "Cameras");
-            string Helpers = getByPatternToDigit(content, "Helpers");
-            string Renderer = getRenderer(content);
-            Textures = getTextures(content);
-
-            return new FileInfo(Version, Vertices, Faces, Shapes, Lights, Cameras, Helpers, Renderer);
-        }
-
-        static string getByPatternToDigit(string text, string pattern)
-        {
-            string reg = pattern + @":\s+(?<target>[\d.,]+)[^\d,.]";
-            Match match = Regex.Match(text, reg);
-            return match.Success ? match.Groups["target"].Value.Trim() : "";
-        }
-
-        static string getRenderer(string text)
-        {
-            string regexPattern = string.Format(@"(?<=Renderer\sName=).*?(?=\x14)");
-            Match match = Regex.Match(text, regexPattern);
-
-            if (match.Success)
-            {
-                return match.Groups[0].Value.Trim().Replace($"\u0000", "");
-            }
-            else
-            {
                 return "";
             }
         }
 
-        static List<string> getTextures(string text)
+        public string[] ContextSplitter(string context)
         {
-            string regexPattern = string.Format(@"\w+.png|\w+.jpg|\w+.tif");
-            List<string> matchList = new List<string>();
-            foreach (Match match in Regex.Matches(text, regexPattern))
-            {
-                matchList.Add(match.Value.Trim());
-            }
-            return matchList;
+            return Regex.Split(context, @"[\p{Cc}]");
         }
     }
 }
+
+
