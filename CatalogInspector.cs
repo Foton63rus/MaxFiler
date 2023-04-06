@@ -1,4 +1,6 @@
-﻿namespace MaxFiler
+﻿using System.IO;
+
+namespace MaxFiler
 {
     /// <summary>
     /// 
@@ -22,11 +24,11 @@
         private Dictionary<string, IFileInfoParser> _fileFormatToParserDictionary = new Dictionary<string, IFileInfoParser>();
         private List<IFileInfoParser> _fileInfoParsers = new List<IFileInfoParser>();
 
-        private FileInfoWriter _fileInfoWriter;
+        private InfoWriter _infoWriter;
 
         public CatalogInspector(IFileInfoParser[] fileInfoParsers = null)
         {   
-            _fileInfoWriter = new FileInfoWriter();
+            _infoWriter = new InfoWriter();
 
             AppEvents.FileFormatToParserRegistryAction += AddFileFormatToParser;
 
@@ -56,7 +58,7 @@
 
             if (filesInCurrentDirectoryCanParse != null)
             {
-                _fileInfoWriter.writeByFileName(filesInCurrentDirectoryCanParse.FileName, JsonConvert.SerializeObject(filesInCurrentDirectoryCanParse) );
+                _infoWriter.WriteCatalogInfo( new CatalogInfo(filesInCurrentDirectoryCanParse, GetRenderList( directory, filesInCurrentDirectoryCanParse)) );
                 return filesInCurrentDirectoryCanParse;
             }
             else
@@ -91,9 +93,7 @@
             {   
                 if (_fileFormatToParserDictionary.ContainsKey(Path.GetExtension(file)))
                 {
-                    Console.WriteLine(file);
                     fileInfo = _fileFormatToParserDictionary[Path.GetExtension(file)].Parse(file);
-                    Console.WriteLine(fileInfo.ToString());
                 }
             }
             return fileInfo;

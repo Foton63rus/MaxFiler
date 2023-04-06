@@ -15,6 +15,7 @@
                 if (item != "")
                 {
                     contextSubstrings.Add(item.Trim());
+                    Console.WriteLine(contextSubstrings.Last());
                 }
             }
             FileInfo info = ExtractInfo(contextSubstrings);
@@ -28,7 +29,7 @@
             {
                 if (item.StartsWith(paramName))
                 {
-                    return item.Split(" ")[1];
+                    return item.Split(":")[1].Trim();
                 }
             }
             return null;
@@ -40,7 +41,7 @@
         {
             List<string> Textures = new List<string>();
 
-            string Version = getParametrFromContextSubstrings(contextSubstrings, "Version");
+            string Version = getParametrFromContextSubstrings(contextSubstrings, "3ds Max Version");
             string Vertices = getParametrFromContextSubstrings(contextSubstrings, "Vertices");
             string Faces = getParametrFromContextSubstrings(contextSubstrings, "Faces");
             string Shapes = getParametrFromContextSubstrings(contextSubstrings, "Shapes");
@@ -63,8 +64,8 @@
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 1024))
                     {
                         string contents = reader.ReadToEnd();
-
-                        int first = contents.IndexOf("Version:");
+                        
+                        int first = contents.IndexOf("3ds Max Version:");
                         int last = contents.IndexOf("RenderElements");
 
                         string content = contents.Substring(first, last - first);
