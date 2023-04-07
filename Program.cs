@@ -14,9 +14,14 @@ class Program
         CatalogInspector inspector = new CatalogInspector(colorManager);
         inspector.AddParser( new MaxInfoParser() );
         inspector.InitParsers();
-        Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
-        string directory = Console.ReadLine();
-        inspector.InspectDirectory(directory);
+        
+        while (true)
+        {
+            Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
+            string directory = Console.ReadLine();
+            inspector.InspectDirectory(directory);
+            Console.WriteLine("Завершено");
+        }
 
         Console.ReadLine();
     }

@@ -68,12 +68,12 @@ internal class PaletteHistogram
                 }
                 Rate[closestPaletteColor] += currentRate;
             }
-            var sortedRate = Rate.OrderBy(x => x.Value).Where(x => x.Value>0);
+            var sortedRate = Rate.OrderByDescending(x => x.Value).Where(x => x.Value>0).Take(5);
             foreach (var item in sortedRate)
             {
                 Console.WriteLine($"Rate: {item.Key} - {item.Value}");
             }
-            return Rate.OrderBy(x => x.Value).Where(x => x.Value > 0).ToDictionary(x=>x.Key, x=>x.Value);
+            return sortedRate.ToDictionary(x=>x.Key, x=>x.Value);
         }
     }
     private MagickColor toMagickColor(IMagickColor<byte> color)

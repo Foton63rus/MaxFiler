@@ -13,7 +13,10 @@
             {
                 colors = colorsNames.Take(maxColors).ToArray();
             }
-            colors = colorsNames;
+            else
+            {
+                colors = colorsNames;
+            }
         }
     }
 }

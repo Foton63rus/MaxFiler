@@ -23,12 +23,12 @@
         private List<IFileInfoParser> _fileInfoParsers = new List<IFileInfoParser>();
 
         private InfoWriter _infoWriter;
-        private PaletteFacade _colorManager;
+        private PaletteFacade _paletteFacade;
 
-        public CatalogInspector(Palette.PaletteFacade colorManager, IFileInfoParser[] fileInfoParsers = null)
+        public CatalogInspector(Palette.PaletteFacade paletteFacade, IFileInfoParser[] fileInfoParsers = null)
         {   
             _infoWriter = new InfoWriter();
-            _colorManager = colorManager;
+            _paletteFacade = paletteFacade;
 
             AppEvents.FileFormatToParserRegistryAction += AddFileFormatToParser;
 
@@ -62,8 +62,8 @@
                 List<PreviewSlot> previews = new List<PreviewSlot>();
                 foreach (string renderName in renderList)
                 {
-                    var colorRate = _colorManager.ImageColorRate(Path.Combine(directory, renderName));
-                    string[] colorNames = _colorManager.GetColorNamesByPaletteColorList(colorRate.Keys.ToList()).ToArray();
+                    var colorRate = _paletteFacade.ImageColorRate(Path.Combine(directory, renderName));
+                    string[] colorNames = _paletteFacade.GetColorNamesByPaletteColorList(colorRate.Keys.ToList()).ToArray();
                     previews.Add( new PreviewSlot( renderName, colorNames, 5 ));
                 }
 
