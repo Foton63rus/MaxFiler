@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace MaxFiler
+﻿namespace MaxFiler.Palette
 {
     /// <summary>
     /// 
@@ -25,10 +23,12 @@ namespace MaxFiler
         private List<IFileInfoParser> _fileInfoParsers = new List<IFileInfoParser>();
 
         private InfoWriter _infoWriter;
+        private PaletteFacade _colorManager;
 
-        public CatalogInspector(IFileInfoParser[] fileInfoParsers = null)
+        public CatalogInspector(Palette.PaletteFacade colorManager, IFileInfoParser[] fileInfoParsers = null)
         {   
             _infoWriter = new InfoWriter();
+            _colorManager = colorManager;
 
             AppEvents.FileFormatToParserRegistryAction += AddFileFormatToParser;
 
@@ -46,7 +46,7 @@ namespace MaxFiler
             }
         }
 
-        public FileInfo InspectDirectory(string directory)
+        public CatalogInfo InspectDirectory(string directory)
         {
             if (!Directory.Exists(directory))
             {
@@ -58,8 +58,19 @@ namespace MaxFiler
 
             if (filesInCurrentDirectoryCanParse != null)
             {
-                _infoWriter.WriteCatalogInfo( new CatalogInfo(filesInCurrentDirectoryCanParse, GetRenderList( directory, filesInCurrentDirectoryCanParse)) );
-                return filesInCurrentDirectoryCanParse;
+                List<string> renderList = GetRenderList(directory, filesInCurrentDirectoryCanParse);
+                List<PreviewSlot> previews = new List<PreviewSlot>();
+                foreach (string renderName in renderList)
+                {
+                    var colorRate = _colorManager.ImageColorRate(Path.Combine(directory, renderName));
+                    string[] colorNames = _colorManager.GetColorNamesByPaletteColorList(colorRate.Keys.ToList()).ToArray();
+                    previews.Add( new PreviewSlot( renderName, colorNames, 5 ));
+                }
+
+                CatalogInfo catInfo = new CatalogInfo( filesInCurrentDirectoryCanParse, previews);
+                _infoWriter.WriteCatalogInfo( catInfo );
+
+                return catInfo;
             }
             else
             {
@@ -111,7 +122,7 @@ namespace MaxFiler
         {   //находим все картинки в каталоге и все те, которые не содержаться в списке макс файла
             return Directory.GetFiles(directory).   //берем файлы из каталога
                 Where(x => x.EndsWith(".png") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".tif") || x.EndsWith(".tga")).    //отсеиваем картинки
-                Select(x => x.Substring(x.LastIndexOf('\\')+1).ToLower()).  //отсекаем пути до каталога и переводим в нижний регистр
+                Select(x => x.Substring(x.LastIndexOf('\\') + 1).ToLower()).  //отсекаем пути до каталога и переводим в нижний регистр
                 Where(x => !fileInfo.Textures.Contains(x)).ToList();    //фильтруем файлы, находящиейся в списке текстур
         }
     }

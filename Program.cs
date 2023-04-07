@@ -4,35 +4,19 @@ global using Newtonsoft.Json;
 global using System.IO;
 global using ImageMagick;
 using MaxFiler;
-using MaxFiler.ColorManager;
+using MaxFiler.Palette;
 
 class Program
 {
     internal static void Main(string[] args)
     {
-        // Тут блок кода с распознаванием топа цветов из палитры
-        //string picturePath = @"...";
-        List<MagickColor> colors = PaletteHistogram.getTopColorPalette();
-        PaletteHistogram palette = new PaletteHistogram(colors);
-        //palette.ImageRate(picturePath);
-
-        //ColorHistogram.getTopColors(picturePath);
-
-        CatalogInspector inspector = new CatalogInspector();
+        PaletteFacade colorManager = new PaletteFacade();
+        CatalogInspector inspector = new CatalogInspector(colorManager);
         inspector.AddParser( new MaxInfoParser() );
         inspector.InitParsers();
         Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
         string directory = Console.ReadLine();
-        MaxFiler.FileInfo fileInfo = inspector.InspectDirectory(directory);
-        List<string> renderList = inspector.GetRenderList(directory, fileInfo);
-        if (renderList.Count > 0)
-        {
-            foreach (var item in inspector.GetRenderList( directory , fileInfo))
-            {
-                Console.WriteLine(item);
-            }
-            palette.ImageRate(Path.Combine(directory, renderList[0]));
-        }
+        inspector.InspectDirectory(directory);
 
         Console.ReadLine();
     }
