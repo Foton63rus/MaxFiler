@@ -1,4 +1,6 @@
-﻿namespace MaxFiler.Palette;
+﻿using ImageMagick;
+
+namespace MaxFiler.Palette;
 
 internal static class ColorHistogram
 {

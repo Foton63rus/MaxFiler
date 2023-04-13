@@ -1,28 +1,22 @@
-﻿global using System.Text;
-global using System.Text.RegularExpressions;
-global using Newtonsoft.Json;
-global using System.IO;
-global using ImageMagick;
+using Cataloger;
 using MaxFiler;
 using MaxFiler.Palette;
 
-class Program
+namespace WinFormsApp1
 {
-    internal static void Main(string[] args)
+    internal static class Program
     {
-        PaletteFacade colorManager = new PaletteFacade();
-        CatalogInspector inspector = new CatalogInspector(colorManager);
-        inspector.AddParser( new MaxInfoParser() );
-        inspector.InitParsers();
-        
-        while (true)
-        {
-            Console.WriteLine("ВВедите путь к папке, в которой надо найти файлы .max и собрать с них инфу");
-            string directory = Console.ReadLine();
-            inspector.InspectDirectory(directory);
-            Console.WriteLine("Завершено");
-        }
+        private static Form1 _mainForm;
+        private static MainManager _mainManager;
 
-        Console.ReadLine();
+        [STAThread]
+        static void Main()
+        {
+            ApplicationConfiguration.Initialize();
+            _mainForm = new Form1();
+            _mainManager = new MainManager();
+            _mainManager.InitCataloger();
+            Application.Run(_mainForm);
+        }
     }
 }

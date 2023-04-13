@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using ImageMagick;
 
 namespace MaxFiler.Palette;
 
@@ -22,10 +22,15 @@ internal class PaletteHistogram
 
     public PaletteHistogram(List<MagickColor> paletteColors)
     {
-        foreach (var color in paletteColors)
+        foreach (MagickColor color in paletteColors)
         {
             Rate.Add(toMagickColor(color), 0);
         }
+    }
+
+    public MagickColor toMagickColor(IMagickColor<byte> color)
+    {
+        return new MagickColor(color.R, color.G, color.B);
     }
 
     internal Dictionary<MagickColor, int> ImageColorRate(string filename)
@@ -37,12 +42,12 @@ internal class PaletteHistogram
             int wSize = 64; int hSize = 64;
             image.Resize(wSize, hSize); //уменьшаем размер картинки для увеличения скорости просчета
             var pixColors = image.Histogram();
-            Console.WriteLine($"pix count: {pixColors.Count}/{wSize*hSize}");
+            Console.WriteLine($"pix count: {pixColors.Count}/{wSize * hSize}");
             MagickColor currentColor;
             int currentRate;
             MagickColor closestPaletteColor;
             float difference;
-            
+
             foreach (var picColor in pixColors)
             {
                 currentColor = toMagickColor(picColor.Key);
@@ -68,21 +73,18 @@ internal class PaletteHistogram
                 }
                 Rate[closestPaletteColor] += currentRate;
             }
-            var sortedRate = Rate.OrderByDescending(x => x.Value).Where(x => x.Value>0).Take(5);
+            var sortedRate = Rate.OrderByDescending(x => x.Value).Where(x => x.Value > 0).Take(5);
             foreach (var item in sortedRate)
             {
                 Console.WriteLine($"Rate: {item.Key} - {item.Value}");
             }
-            return sortedRate.ToDictionary(x=>x.Key, x=>x.Value);
+            return sortedRate.ToDictionary(x => x.Key, x => x.Value);
         }
     }
-    private MagickColor toMagickColor(IMagickColor<byte> color)
-    {
-        return new MagickColor(color.R, color.G, color.B);
-    }
+
     private float ColorDifference(MagickColor color1, MagickColor color2)
     {
-        return MathF.Sqrt(  (color1.R - color2.R) * (color1.R - color2.R) +
+        return MathF.Sqrt((color1.R - color2.R) * (color1.R - color2.R) +
                             (color1.G - color2.G) * (color1.G - color2.G) +
                             (color1.B - color2.B) * (color1.B - color2.B));
     }
@@ -93,5 +95,5 @@ internal class PaletteHistogram
             Rate[item.Key] = 0;
         }
     }
-    public static List<MagickColor> getTopColorPalette() => PaletteColor.GetColors();
+    public static List<MagickColor> GetTopColorPalette() => PaletteColor.GetColors();
 }

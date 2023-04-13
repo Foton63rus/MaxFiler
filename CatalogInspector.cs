@@ -1,23 +1,6 @@
 ﻿namespace MaxFiler.Palette
 {
-    /// <summary>
-    /// 
-    /// Класс-менеджер парсеров.
-    /// 
-    //  Порядок его использования:
-    /// создаем экземпляр
-    /// CatalogInspector inspector = new CatalogInspector();
-    /// добавляем-с парсеры разных форматов
-    /// inspector.AddParser( new ___Parser() );
-    /// инициализируем парсеры
-    /// inspector.InitParsers();
-    /// инспектируем каталог
-    /// inspector.InspectDirectory( "путь_к_каталогу" );
-    /// 
-    /// Метод, который из картинок пытается выделить рендеры
-    //  GetRenderList(string directory, FileInfo fileInfo)
-    /// </summary>
-    internal class CatalogInspector
+    public class CatalogInspector
     {
         private Dictionary<string, IFileInfoParser> _fileFormatToParserDictionary = new Dictionary<string, IFileInfoParser>();
         private List<IFileInfoParser> _fileInfoParsers = new List<IFileInfoParser>();
@@ -26,7 +9,7 @@
         private PaletteFacade _paletteFacade;
 
         public CatalogInspector(Palette.PaletteFacade paletteFacade, IFileInfoParser[] fileInfoParsers = null)
-        {   
+        {
             _infoWriter = new InfoWriter();
             _paletteFacade = paletteFacade;
 
@@ -50,6 +33,7 @@
         {
             if (!Directory.Exists(directory))
             {
+                AppEvents.LogActionInvoke(this, "Не верно указана директория");
                 Console.WriteLine("Directory not exist");
                 return null;
             }
@@ -64,11 +48,11 @@
                 {
                     var colorRate = _paletteFacade.ImageColorRate(Path.Combine(directory, renderName));
                     string[] colorNames = _paletteFacade.GetColorNamesByPaletteColorList(colorRate.Keys.ToList()).ToArray();
-                    previews.Add( new PreviewSlot( renderName, colorNames, 5 ));
+                    previews.Add(new PreviewSlot(renderName, colorNames, 5));
                 }
 
-                CatalogInfo catInfo = new CatalogInfo( filesInCurrentDirectoryCanParse, previews);
-                _infoWriter.WriteCatalogInfo( catInfo );
+                CatalogInfo catInfo = new CatalogInfo(filesInCurrentDirectoryCanParse, previews);
+                _infoWriter.WriteCatalogInfo(catInfo);
 
                 return catInfo;
             }
@@ -100,8 +84,8 @@
         private FileInfo FilesParse(string directory)
         {
             FileInfo fileInfo = null;
-            foreach (string file in getFiles(directory)) 
-            {   
+            foreach (string file in getFiles(directory))
+            {
                 if (_fileFormatToParserDictionary.ContainsKey(Path.GetExtension(file)))
                 {
                     fileInfo = _fileFormatToParserDictionary[Path.GetExtension(file)].Parse(file);
@@ -110,10 +94,11 @@
             return fileInfo;
         }
 
-        private void RecursiveSearchInNestedFolders(List<string> directories) 
-        { 
+        private void RecursiveSearchInNestedFolders(List<string> directories)
+        {
             foreach (string directory in directories)
             {
+                AppEvents.LogActionInvoke(this, directory);
                 InspectDirectory(directory);
             }
         }

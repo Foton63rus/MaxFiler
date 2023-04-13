@@ -1,6 +1,8 @@
-﻿namespace MaxFiler.Palette
+﻿using ImageMagick;
+
+namespace MaxFiler.Palette
 {
-    internal class PaletteFacade
+    public class PaletteFacade
     {
         PaletteHistogram paletteHistogram;
         public PaletteFacade()

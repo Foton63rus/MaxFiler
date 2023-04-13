@@ -1,4 +1,7 @@
-﻿namespace MaxFiler
+﻿using System.Text;
+using System.Text.RegularExpressions;
+
+namespace MaxFiler
 {
     public class MaxInfoParser : IFileInfoParser
     {
@@ -52,7 +55,7 @@
             Textures = getTextures(contextSubstrings);
             return new FileInfo(Version, Vertices, Faces, Shapes, Lights, Cameras, Helpers, Renderer, Textures);
         }
-        static List<string> getTextures(List<string> contextSubstrings) => 
+        static List<string> getTextures(List<string> contextSubstrings) =>
             contextSubstrings.Where(x => x.EndsWith(".png") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".tif") || x.EndsWith(".tga")).ToList();
 
         public static string GetContextFromFileFile(string filePath)
@@ -64,7 +67,7 @@
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 1024))
                     {
                         string contents = reader.ReadToEnd();
-                        
+
                         int first = contents.IndexOf("3ds Max Version:");
                         int last = contents.IndexOf("RenderElements");
 
@@ -76,7 +79,7 @@
             }
             catch (Exception e)
             {
-                return "";
+                return $"{e.Message}";
             }
         }
 

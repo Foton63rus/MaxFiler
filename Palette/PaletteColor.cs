@@ -1,8 +1,10 @@
-﻿namespace MaxFiler.Palette;
+﻿using ImageMagick;
+
+namespace MaxFiler.Palette;
 
 internal static class PaletteColor
 {
-    private static Dictionary<MagickColor, string> _palette = new Dictionary<MagickColor, string>() 
+    private static Dictionary<MagickColor, string> _palette = new Dictionary<MagickColor, string>()
     {
         { new MagickColor(51, 0, 0), "red 1" },
         { new MagickColor(102, 0, 0), "red 2" },

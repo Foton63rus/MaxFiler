@@ -1,10 +1,13 @@
-﻿namespace MaxFiler
+﻿using Newtonsoft.Json;
+using System.Text;
+
+namespace MaxFiler
 {
     internal class InfoWriter
     {
         private string _fileInfoName = $"_info.txt";
 
-        internal void WriteCatalogInfo( CatalogInfo catalogInfo )
+        internal void WriteCatalogInfo(CatalogInfo catalogInfo)
         {
 
             string file;
@@ -19,7 +22,8 @@
 
                 using (StreamWriter sw = new StreamWriter(file, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(JsonConvert.SerializeObject( catalogInfo ));
+                    sw.WriteLine(JsonConvert.SerializeObject(catalogInfo));
+                    AppEvents.LogActionInvoke(this, "Информационный файл сохранен");
                 }
             }
             catch (Exception e)

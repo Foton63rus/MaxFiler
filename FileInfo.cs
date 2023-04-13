@@ -1,23 +1,25 @@
-﻿namespace MaxFiler
+﻿using System.Text;
+
+namespace MaxFiler
 {
     [Serializable]
     public class FileInfo
     {
-        public string       FileName;
-        public string       FileType;
-        public string       Version;
-        public string       Vertices;
-        public string       Faces;
-        public string       Shapes;
-        public string       Lights;
-        public string       Cameras;
-        public string       Helpers;
-        public string       Renderer;
+        public string FileName;
+        public string FileType;
+        public string Version;
+        public string Vertices;
+        public string Faces;
+        public string Shapes;
+        public string Lights;
+        public string Cameras;
+        public string Helpers;
+        public string Renderer;
 
         [NonSerialized]
         public List<string> Textures;
 
-        public FileInfo( 
+        public FileInfo(
                         string Version = "",
                         string Vertices = "",
                         string Faces = "",
@@ -30,22 +32,22 @@
                         string FileName = ""
                         )
         {
-            this.FileName   = FileName;
-            this.FileType   = "Max";
-            this.Version    = Version;
-            this.Vertices   = Vertices;
-            this.Faces      = Faces;
-            this.Shapes     = Shapes;
-            this.Lights     = Lights;
-            this.Cameras    = Cameras;
-            this.Helpers    = Helpers;
-            this.Renderer   = Renderer;
+            this.FileName = FileName;
+            this.FileType = "Max";
+            this.Version = Version;
+            this.Vertices = Vertices;
+            this.Faces = Faces;
+            this.Shapes = Shapes;
+            this.Lights = Lights;
+            this.Cameras = Cameras;
+            this.Helpers = Helpers;
+            this.Renderer = Renderer;
 
             if (Textures != null)
             {
                 this.Textures = Textures;
             }
-            
+
         }
 
         public override string ToString()
@@ -59,7 +61,7 @@
                 {
                     sb.Append($"{separator}{item}");
                 }
-                strTextures = sb.ToString().Substring(separator.Length-1);
+                strTextures = sb.ToString().Substring(separator.Length - 1);
             }
             return
                 //$"Type: {FileName}\n" +
